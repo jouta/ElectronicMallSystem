@@ -42,6 +42,7 @@ func main() {
 	{
 		// 商品增删改查
 		admin.POST("/createProduct", controllers.CreateProduct)
+		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
 		//用户增删改查
 		admin.POST("/CreateUser", controllers.CreateUser)
 		admin.GET("/ShowUser", controllers.ShowUser)
