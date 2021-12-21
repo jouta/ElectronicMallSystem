@@ -16,14 +16,14 @@ type User struct {
 func CreateUser(c * gin.Context) {
 	db := database.DBConn()
 
-	type CreateProduct struct {
+	type CreateUser struct {
 		UserName string `json:"userName" form:"userName"  binding:"required"`
 		PassWord string `json:"passWord" form:"passWord"  binding:"required"`
 		Address  string `json:"address" form:"address"  binding:"required"`
 		UserType int `json:"userType" form:"userType"  binding:"required"`
 	}
 
-	var json CreateProduct
+	var json CreateUser
 
 	if err := c.ShouldBindJSON(&json); err == nil {
 		insUser, err := db.Prepare("INSERT INTO user(UserName, PassWord, Address, userType) VALUE(?,?,?,?)")
@@ -49,21 +49,28 @@ func CreateUser(c * gin.Context) {
 func ShowUser(c * gin.Context) {
 	db := database.DBConn()
 
-	rows, err := db.Query("SELECT userId, userName, address FROM user ")
+	type ShowUser struct {
+		UserId int `json:"UserId" form:"UserId"  binding:"required"`
+		UserName string `json:"userName" form:"userName"  binding:"required"`
+		Address  string `json:"address" form:"address"  binding:"required"`
+		UserType int `json:"userType" form:"userType"  binding:"required"`
+	}
+
+	rows, err := db.Query("SELECT userId, userName, address, UserType FROM user ")
 	if err != nil {
 		c.JSON(500, gin.H {
 			"message": err.Error(),
 		})
 	}
 
-	var listUsers [] User
+	var listUsers [] ShowUser
 
 	for rows.Next() {
-		var userId int
+		var userId, userType int
 		var userName, address string
-		users := User{}
+		users := ShowUser{}
 
-		err = rows.Scan(&userId, &userName, &address)
+		err = rows.Scan(&userId, &userName, &address, &userType)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -71,6 +78,7 @@ func ShowUser(c * gin.Context) {
 		users.UserId = userId
 		users.UserName = userName
 		users.Address = address
+		users.UserType = userType
 
 		listUsers = append(listUsers, users)
 	}
