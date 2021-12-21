@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"mall/controllers"
 	"net/http"
 )
 
@@ -28,17 +29,34 @@ func main() {
 	r.Use(Cors())
 	gin.SetMode(viper.GetString("mode"))
 
-
-	user := r.Group("/api/user")
+	client := r.Group("/user")
 	{
-
-		user.GET("/info/:id", UserHandler.UserInfoHandler)
-		user.POST("/add", UserHandler.AddUserHandler)
-		user.POST("/edit", UserHandler.EditUserHandler)
-		user.POST("/delete/:id", UserHandler.DeleteUserHandler)
+		client.GET("/stories", controllers.Show)
+		client.GET("/stories/:id", controllers.Read)
+		client.POST("/stories", controllers.Create)
+		client.PUT("/stories/:id", controllers.Update)
+		client.DELETE("/stories/:id", controllers.Delete)
 	}
 
-	port := viper.GetString("port")
+	product := r.Group("/product")
+	{
+		product.POST("/create", controllers.CreateProduct)
+		product.GET("/stories", controllers.Show)
+		product.GET("/stories/:id", controllers.Read)
+		product.POST("/stories", controllers.Create)
+		product.PUT("/stories/:id", controllers.Update)
+		product.DELETE("/stories/:id", controllers.Delete)
+	}
+	//user := r.Group("/api/user")
+	//{
+	//
+	//	user.GET("/info/:id", UserHandler.UserInfoHandler)
+	//	user.POST("/add", UserHandler.AddUserHandler)
+	//	user.POST("/edit", UserHandler.EditUserHandler)
+	//	user.POST("/delete/:id", UserHandler.DeleteUserHandler)
+	//}
 
-	r.Run(port)
+	//port := viper.GetString("port")
+
+	r.Run(":3000")
 }
