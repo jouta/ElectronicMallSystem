@@ -91,7 +91,7 @@ func DeleteProduct(c * gin.Context) {
 func ShowProduct(c * gin.Context) {
 	db := database.DBConn()
 
-	rows, err := db.Query("SELECT * FROM user ")
+	rows, err := db.Query("SELECT * FROM product ")
 	if err != nil {
 		c.JSON(500, gin.H {
 			"message": err.Error(),
@@ -105,7 +105,7 @@ func ShowProduct(c * gin.Context) {
 		var productName, productIntro, price string
 		products := Product{}
 
-		err = rows.Scan(&productId, &productName, &productIntro, &price, &stockNum)
+		err = rows.Scan(&productId, &productIntro, &price, &stockNum, &productName )
 		if err != nil {
 			panic(err.Error())
 		}
@@ -114,10 +114,44 @@ func ShowProduct(c * gin.Context) {
 		products.ProductName = productName
 		products.Price = price
 		products.StockNum = stockNum
+		products.ProductIntro = productIntro
 
 		listProduct = append(listProduct, products)
 	}
 
 	c.JSON(200, listProduct)
+	defer db.Close()
+}
+
+func SearchProduct(c * gin.Context) {
+	db := database.DBConn()
+
+	rows, err := db.Query("SELECT * FROM product WHERE ")
+	if err != nil {
+		c.JSON(500, gin.H {
+			"message": err.Error(),
+		})
+	}
+
+	var listStories []Story
+
+	for rows.Next() {
+		var id int
+		var title, body string
+		story := Story{}
+
+		err = rows.Scan(&id, &title, &body)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		story.Id = id
+		story.Title = title
+		story.Content = body
+
+		listStories = append(listStories, story)
+	}
+
+	c.JSON(200, listStories)
 	defer db.Close()
 }

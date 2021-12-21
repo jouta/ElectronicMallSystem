@@ -29,6 +29,7 @@ func main() {
 	r.Use(Cors())
 	gin.SetMode(viper.GetString("mode"))
 
+	//参考用
 	client := r.Group("/storie")
 	{
 		client.GET("/stories", controllers.Show)
