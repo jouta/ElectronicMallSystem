@@ -50,7 +50,7 @@ func ShowUser(c * gin.Context) {
 	db := database.DBConn()
 
 	type ShowUser struct {
-		UserId int `json:"UserId" form:"UserId"  binding:"required"`
+		UserId int `json:"userId" form:"userId"  binding:"required"`
 		UserName string `json:"userName" form:"userName"  binding:"required"`
 		Address  string `json:"address" form:"address"  binding:"required"`
 		UserType int `json:"userType" form:"userType"  binding:"required"`

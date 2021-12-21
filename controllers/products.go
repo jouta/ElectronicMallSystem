@@ -45,7 +45,6 @@ func CreateProduct(c * gin.Context) {
 	defer db.Close()
 }
 
-
 func UpdateProduct(c * gin.Context) {
 	db := database.DBConn()
 	type UpdateStory struct {
@@ -89,3 +88,36 @@ func DeleteProduct(c * gin.Context) {
 	defer db.Close()
 }
 
+func ShowProduct(c * gin.Context) {
+	db := database.DBConn()
+
+	rows, err := db.Query("SELECT * FROM user ")
+	if err != nil {
+		c.JSON(500, gin.H {
+			"message": err.Error(),
+		})
+	}
+
+	var listProduct [] Product
+
+	for rows.Next() {
+		var productId, stockNum int
+		var productName, productIntro, price string
+		products := Product{}
+
+		err = rows.Scan(&productId, &productName, &productIntro, &price, &stockNum)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		products.ProductId = productId
+		products.ProductName = productName
+		products.Price = price
+		products.StockNum = stockNum
+
+		listProduct = append(listProduct, products)
+	}
+
+	c.JSON(200, listProduct)
+	defer db.Close()
+}

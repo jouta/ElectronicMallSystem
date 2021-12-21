@@ -47,7 +47,12 @@ func main() {
 		//用户增删改查
 		admin.POST("/CreateUser", controllers.CreateUser)
 		admin.GET("/ShowUser", controllers.ShowUser)
+	}
 
+	common := r.Group("/common")
+	{
+		//商品列表
+		common.GET("/ShowProduct", controllers.ShowProduct)
 	}
 
 
