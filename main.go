@@ -29,7 +29,7 @@ func main() {
 	r.Use(Cors())
 	gin.SetMode(viper.GetString("mode"))
 
-	client := r.Group("/user")
+	client := r.Group("/storie")
 	{
 		client.GET("/stories", controllers.Show)
 		client.GET("/stories/:id", controllers.Read)
@@ -38,25 +38,17 @@ func main() {
 		client.DELETE("/stories/:id", controllers.Delete)
 	}
 
-	product := r.Group("/product")
+	admin := r.Group("/admin")
 	{
-		product.POST("/create", controllers.CreateProduct)
-		product.GET("/stories", controllers.Show)
-		product.GET("/stories/:id", controllers.Read)
-		product.POST("/stories", controllers.Create)
-		product.PUT("/stories/:id", controllers.Update)
-		product.DELETE("/stories/:id", controllers.Delete)
-	}
-	//user := r.Group("/api/user")
-	//{
-	//
-	//	user.GET("/info/:id", UserHandler.UserInfoHandler)
-	//	user.POST("/add", UserHandler.AddUserHandler)
-	//	user.POST("/edit", UserHandler.EditUserHandler)
-	//	user.POST("/delete/:id", UserHandler.DeleteUserHandler)
-	//}
+		// 商品增删改查
+		admin.POST("/createProduct", controllers.CreateProduct)
+		//用户增删改查
+		admin.POST("/CreateUser", controllers.CreateUser)
+		admin.GET("/ShowUser", controllers.ShowUser)
 
-	//port := viper.GetString("port")
+	}
+
+
 
 	r.Run(":3000")
 }
