@@ -107,7 +107,7 @@ func Read(c * gin.Context) {
 func Update(c * gin.Context) {
 	db := database.DBConn()
 	type UpdateStory struct {
-		Title string `form:"title json:"title" binding:"required"`
+		Title string `form:"title" json:"title" binding:"required"`
 		Body string `form:"body" json:"body" binding:"required"`
 	}
 

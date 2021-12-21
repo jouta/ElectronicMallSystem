@@ -15,11 +15,10 @@ type Product struct {
 
 func CreateProduct(c * gin.Context) {
 	db := database.DBConn()
-
 	type CreateProduct struct {
 		ProductName  string `form:"productName" json:"productName" binding:"required"`
 		ProductIntro string `form:"productIntro" json:"productIntro"`
-		Prize    string `form:"prize" json:"prize" binding:"required"`
+		Price    string `form:"price" json:"price" binding:"required"`
 		StockNum int    `form:"stockNum" json:"stockNum" binding:"required"`
 	}
 
@@ -33,7 +32,7 @@ func CreateProduct(c * gin.Context) {
 			})
 		}
 
-		insProduct.Exec(json.ProductName, json.ProductIntro, json.Prize, json.StockNum)
+		insProduct.Exec(json.ProductName, json.ProductIntro, json.Price, json.StockNum)
 		c.JSON(200, gin.H {
 			"message": "inserted",
 		})
@@ -43,5 +42,35 @@ func CreateProduct(c * gin.Context) {
 		})
 	}
 
+	defer db.Close()
+}
+
+func UpdateProduct(c * gin.Context) {
+	db := database.DBConn()
+	type UpdateStory struct {
+		//Title string `form:"title" json:"title" binding:"required"`
+		//Body string `form:"body" json:"body" binding:"required"`
+		ProductName  string `form:"productName" json:"productName" binding:"required"`
+		ProductIntro string `form:"productIntro" json:"productIntro"`
+		Price    string `form:"price" json:"price" binding:"required"`
+		StockNum int    `form:"stockNum" json:"stockNum" binding:"required"`
+	}
+
+	var json UpdateStory
+	if err := c.ShouldBindJSON(&json); err == nil {
+		edit, err := db.Prepare("UPDATE product SET productName = ?, productIntro = ?, price = ?, stockNum = ? WHERE productId = " + c.Param("id"))
+		if err != nil {
+			panic(err.Error())
+		}
+		edit.Exec(json.ProductName, json.ProductIntro, json.Price, json.StockNum)
+
+		c.JSON(200, gin.H {
+			"message": "edited",
+		})
+	} else {
+		c.JSON(500, gin.H {
+			"error": err.Error(),
+		})
+	}
 	defer db.Close()
 }
