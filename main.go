@@ -40,9 +40,10 @@ func main() {
 
 	admin := r.Group("/admin")
 	{
-		// 商品增删改查
+		// 商品增删改
 		admin.POST("/createProduct", controllers.CreateProduct)
 		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
+		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
 		//用户增删改查
 		admin.POST("/CreateUser", controllers.CreateUser)
 		admin.GET("/ShowUser", controllers.ShowUser)

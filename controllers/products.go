@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"mall/database"
 )
@@ -50,8 +49,6 @@ func CreateProduct(c * gin.Context) {
 func UpdateProduct(c * gin.Context) {
 	db := database.DBConn()
 	type UpdateStory struct {
-		//Title string `form:"title" json:"title" binding:"required"`
-		//Body string `form:"body" json:"body" binding:"required"`
 		ProductName  string `form:"productName" json:"productName" `
 		ProductIntro string `form:"productIntro" json:"productIntro"`
 		Price    string `form:"price" json:"price" `
@@ -60,7 +57,6 @@ func UpdateProduct(c * gin.Context) {
 
 	var json UpdateStory
 	if err := c.ShouldBindJSON(&json); err == nil {
-		fmt.Println(c.Param("productId"))
 		edit, err := db.Prepare("UPDATE product SET productName = ?, productIntro = ?, price = ?, stockNum = ? WHERE productId = " + c.Param("productId"))
 		if err != nil {
 			panic(err.Error())
@@ -75,6 +71,21 @@ func UpdateProduct(c * gin.Context) {
 			"error": err.Error(),
 		})
 	}
+	defer db.Close()
+}
+
+func DeleteProduct(c * gin.Context) {
+	db := database.DBConn()
+	delete, err := db.Prepare("DELETE FROM product WHERE productId = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	delete.Exec(c.Param("productId"))
+	c.JSON(200, gin.H {
+		"message": "deleted",
+	})
+
 	defer db.Close()
 }
 
