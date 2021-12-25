@@ -73,6 +73,7 @@ func main() {
 		common.GET("/ShowProduct", redis_controllers.ShowProduct)
 		common.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		common.GET("/SearchProduct", redis_controllers.SearchProduct)
+		common.POST("/Login", redis_controllers.Login)
 	}
 
 
