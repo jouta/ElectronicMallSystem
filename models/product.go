@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -68,7 +67,7 @@ func (product Product) GetAllProduct(c redis.Conn) (error, []Product) {
 	return nil, listProducts
 }
 
-<<<<<<< HEAD
+
 func (product Product) GetProduct(c redis.Conn, productId string) (error, Product) {
 	values, err := redis.Values(c.Do("HGETALL", productId))
 	if len(values) < 1 {
@@ -93,5 +92,4 @@ func (product Product) UpdateProduct(c redis.Conn, userid string) error {
 	}
 	return nil
 }
-=======
->>>>>>> origin/redis
+

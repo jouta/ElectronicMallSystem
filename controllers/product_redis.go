@@ -1,11 +1,9 @@
 package controllers
 
 import (
-<<<<<<< HEAD
-=======
+
 	"fmt"
 	"github.com/Chain-Zhang/pinyin"
->>>>>>> origin/redis
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"mall/models"
@@ -132,31 +130,12 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 
 }
 
-<<<<<<< HEAD
+
 func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 	productID := c.Query("productid")
 	//先查询，获取原来的值放在productData中
 	product := models.Product{}
 	err, productData := product.GetProduct(connRedis.DB, productID)
-=======
-func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
-	var keyWord string
-	keyWord = c.Query("keyWord")
-	product := models.Product{}
-	err, productData := product.GetAllProduct(connRedis.DB)
->>>>>>> origin/redis
-	if err != nil {
-		resData := &Response{
-			status:  false,
-			message: err.Error(),
-		}
-		c.JSON(500, gin.H{
-			"status":  resData.status,
-			"message": resData.message,
-		})
-		return
-	}
-<<<<<<< HEAD
 
 	//绑定从前端查到的值json，空的值就保持原来的值
 	json := models.Product{}
@@ -204,9 +183,27 @@ func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
 			"message": resData.message,
 		})
 	}
-
 }
-=======
+
+
+func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
+	var keyWord string
+	keyWord = c.Query("keyWord")
+	product := models.Product{}
+	err, productData := product.GetAllProduct(connRedis.DB)
+
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
 	var listProducts []models.Product
 	str1, err := pinyin.New(keyWord).Convert()
 	if err != nil {
@@ -236,4 +233,4 @@ func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
 	})
 
 }
->>>>>>> origin/redis
+
