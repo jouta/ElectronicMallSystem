@@ -113,6 +113,27 @@ func (connRedis *ConnRedis) GetUser(c *gin.Context) {
 
 }
 
+//删除用户
+func (connRedis *ConnRedis) DeleteUser(ctx *gin.Context) {
+	var userId string
+	userId = ctx.Query("userid")
+	err := models.DeleteUser(connRedis.DB, userId)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		ctx.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"status": true,
+		"result": userId,
+	})
+}
 
 
 

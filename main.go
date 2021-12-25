@@ -57,11 +57,12 @@ func main() {
 		//用户增删改查
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)
-		//redistest
-		//admin.GET("/addUser", redis_controllers.AddUser)
+		// 用户增删改redis
 		admin.POST("/CreateUser", redis_controllers.CreateUser)
 		admin.GET("/ShowUser", redis_controllers.ShowUser)
-		admin.GET("/getUser", redis_controllers.GetUser)
+		admin.GET("/GetOneUser", redis_controllers.GetUser)
+		admin.DELETE("/DeleteUser", redis_controllers.DeleteUser)
+
 	}
 
 	common := r.Group("/common")

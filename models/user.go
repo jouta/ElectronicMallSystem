@@ -77,7 +77,13 @@ func (user User) Create(c redis.Conn) error {
 	return nil
 }
 
-
+func  DeleteUser(c redis.Conn, userId string) (error) {
+	_, err := redis.Bool(c.Do("DEL", userId))
+	if err != nil{
+		return  err
+	}
+	return  nil
+}
 
 /*
 func (user User) GetTop(c redis.Conn, length int) ([]string, error) {
