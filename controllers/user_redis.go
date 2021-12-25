@@ -6,11 +6,6 @@ import (
 	"mall/models"
 )
 
-type Response struct {
-	status  bool
-	message string
-	result  string
-}
 
 func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
 	json := models.User{}

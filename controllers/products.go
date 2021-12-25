@@ -13,7 +13,7 @@ type Product struct {
 	StockNum int    `json:"stockNum"`
 }
 
-func CreateProduct(c * gin.Context) {
+func CreateProduct_mysql(c * gin.Context) {
 	db := database.DBConn()
 	type CreateProduct struct {
 		ProductName  string `form:"productName" json:"productName" binding:"required"`

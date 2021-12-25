@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
@@ -24,6 +25,7 @@ func Cors() gin.HandlerFunc {
 }
 
 func main() {
+
     //redis连接
 	redis_controllers := controllers.ConnRedis{}
 	redis_controllers.Connect()
@@ -44,10 +46,13 @@ func main() {
 
 	admin := r.Group("/admin")
 	{
-		// 商品增删改
-		admin.POST("/createProduct", controllers.CreateProduct)
+		// 商品增删改mysql
+		admin.POST("/CreateProduct_mysql", controllers.CreateProduct_mysql)
 		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
 		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
+		// 商品增删改redis
+		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
+		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		//用户增删改查
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)
