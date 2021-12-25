@@ -24,6 +24,9 @@ func Cors() gin.HandlerFunc {
 }
 
 func main() {
+    //redis连接
+	redis_controllers := controllers.ConnRedis{}
+	redis_controllers.Connect()
 
 	r := gin.Default()
 	r.Use(Cors())
@@ -48,6 +51,9 @@ func main() {
 		//用户增删改查
 		admin.POST("/CreateUser", controllers.CreateUser)
 		admin.GET("/ShowUser", controllers.ShowUser)
+		//redistest
+		admin.GET("/addUser", redis_controllers.AddUser)
+
 	}
 
 	common := r.Group("/common")

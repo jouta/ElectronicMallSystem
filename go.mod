@@ -3,11 +3,10 @@ module mall
 go 1.16
 
 require (
-	github.com/fsnotify/fsnotify v1.5.1
+	github.com/garyburd/redigo v1.6.3
 	github.com/gin-gonic/gin v1.7.7
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/jinzhu/gorm v1.9.16
-	github.com/satori/go.uuid v1.2.0
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/spf13/viper v1.10.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
