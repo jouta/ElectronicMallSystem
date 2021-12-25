@@ -135,7 +135,72 @@ func (connRedis *ConnRedis) DeleteUser(ctx *gin.Context) {
 	})
 }
 
+func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
+	userID := c.Query("userid")
+	//先查询，获取原来的值放在userData中
+	user := models.User{}
+	err, userData := user.GetUser(connRedis.DB, userID)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
 
+	//绑定从前端查到的值json，空的值就保持原来的值
+	json := models.User{}
+	err = c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+	json.UserId = userData.UserId
+	if json.UserName == "" {
+		json.UserName = userData.UserName
+	}
+	if json.PassWord == "" {
+		json.PassWord = userData.PassWord
+	}
+	if json.Address == "" {
+		json.Address = userData.Address
+	}
+	if json.UserType == 0 {
+		json.UserType = userData.UserType
+	}
+
+	err = json.UpdateUser(connRedis.DB, userID)
+	if err == nil {
+		if err == nil {
+			c.JSON(200, gin.H{
+				"status": true,
+				"result": json,
+			})
+		}
+	} else {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+
+
+
+}
 
 /*
 func (connRedis *ConnRedis) GetTop(ctx *gin.Context) {
