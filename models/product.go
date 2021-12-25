@@ -82,8 +82,8 @@ func (product Product) GetAllProduct(c redis.Conn) (error, []Product) {
 		if err != nil {
 			return err, listProducts
 		}
-		fmt.Println(listProducts)
 		listProducts = append(listProducts, products)
 	}
 	return nil, listProducts
 }
+

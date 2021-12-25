@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/Chain-Zhang/pinyin"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"mall/models"
-	_ "strconv"
+	"strings"
 )
 
 
@@ -21,7 +22,7 @@ func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 	product := models.Product{}
 	err := ctx.ShouldBindJSON(&json)
 	if err == nil{
-		product.ProductId = "product-" + uuid.New().String()
+		product.ProductId = "product-" +  uuid.New().String()
 		product.ProductName = json.ProductName
 		product.ProductIntro = json.ProductIntro
 		product.Price = json.Price
@@ -120,6 +121,52 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 		products.StockNum = productdata.StockNum
 		products.ProductImg = productdata.ProductImg
 		listProducts = append(listProducts, products)
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listProducts,
+	})
+
+}
+
+func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
+	var keyWord string
+	keyWord = c.Query("keyWord")
+	product := models.Product{}
+	err, productData := product.GetAllProduct(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	var listProducts []models.Product
+	str1, err := pinyin.New(keyWord).Convert()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, productdata := range productData {
+		products := models.Product{}
+		str2, err := pinyin.New(productdata.ProductName).Convert()
+		if err != nil {
+			fmt.Println(err)
+		}
+		reg := strings.Contains(str2, str1)
+		if(reg == true){
+			products.ProductId = productdata.ProductId
+			products.ProductName = productdata.ProductName
+			products.ProductIntro = productdata.ProductIntro
+			products.Price = productdata.Price
+			products.StockNum = productdata.StockNum
+			products.ProductImg = productdata.ProductImg
+			listProducts = append(listProducts, products)
+		}
 	}
 
 	c.JSON(200, gin.H{

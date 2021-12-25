@@ -70,6 +70,7 @@ func main() {
 		//商品列表
 		common.GET("/ShowProduct_mysql", controllers.ShowProduct)
 		common.GET("/ShowProduct", redis_controllers.ShowProduct)
+		common.GET("/SearchProduct", redis_controllers.SearchProduct)
 	}
 
 
