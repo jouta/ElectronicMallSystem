@@ -55,9 +55,35 @@ func (product Product) CreateProduct(c redis.Conn) error {
 		           "price", product.Price,
 				   "stockNum", product.StockNum,
 		           "productImg", product.ProductImg,
-		           "Id", product.ProductId)
+		           "productId", product.ProductId)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (product Product) GetAllProduct(c redis.Conn) (error, []Product) {
+	var listProducts []Product
+	values, err := redis.Values(c.Do("KEYS", "product-*"))
+	if err != nil {
+		return err, listProducts
+	}
+	if len(values) < 1 {
+		return errors.New("No product here."), listProducts
+	}
+
+	for _,productId := range values {
+		products := Product{}
+		Rvalues, err := redis.Values(c.Do("HGETALL", productId))
+		if err != nil {
+			return err, listProducts
+		}
+		err = redis.ScanStruct(Rvalues, &products)
+		if err != nil {
+			return err, listProducts
+		}
+		fmt.Println(listProducts)
+		listProducts = append(listProducts, products)
+	}
+	return nil, listProducts
 }
