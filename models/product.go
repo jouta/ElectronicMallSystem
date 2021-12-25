@@ -16,27 +16,8 @@ type Product struct {
 	ProductImg string `json:"productImg" redis:"productImg"`
 }
 
-func (product Product) GetProduct(c redis.Conn, productId string) (error, Product) {
-	values, err := redis.Values(c.Do("HGETALL", productId))
-	fmt.Println(values)
-	if len(values) < 1 {
-		return errors.New("Product is not defined"), product
-	}
-	if err != nil {
-		return err, product
-	} else {
-		if err = redis.ScanStruct(values, &product); err != nil {
-			return err, product
-		} else {
-			return nil, product
-		}
-	}
-}
-
-
 func  DeleteProduct(c redis.Conn, productId string) (error) {
-	del, err := redis.Bool(c.Do("DEL", productId))
-	fmt.Println(del)
+	_, err := redis.Bool(c.Do("DEL", productId))
 	if err != nil{
 		return  err
 	}
@@ -86,4 +67,29 @@ func (product Product) GetAllProduct(c redis.Conn) (error, []Product) {
 		listProducts = append(listProducts, products)
 	}
 	return nil, listProducts
+}
+
+func (product Product) GetProduct(c redis.Conn, productId string) (error, Product) {
+	values, err := redis.Values(c.Do("HGETALL", productId))
+	if len(values) < 1 {
+		return errors.New("The Product is not defined"), product
+	}
+
+	if err != nil {
+		return err, product
+	} else {
+		if err = redis.ScanStruct(values, &product); err != nil {
+			return err, product
+		} else {
+			return nil, product
+		}
+	}
+}
+
+func (product Product) UpdateProduct(c redis.Conn, userid string) error {
+	_, err := c.Do("HSET", userid, "productName", product.ProductName, "productIntro", product.ProductIntro, "price", product.Price, "stockNum", product.StockNum, "productImg", product.ProductImg)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"mall/models"
@@ -28,7 +27,6 @@ func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 		product.StockNum = json.StockNum
 		product.ProductImg = json.ProductImg
 	}
-	fmt.Println(product)
 	err = product.CreateProduct(connRedis.DB)
 	if err == nil {
 		if err == nil {
@@ -126,5 +124,71 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 		"status": true,
 		"result": listProducts,
 	})
+
+}
+
+func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
+	productID := c.Query("productid")
+	//先查询，获取原来的值放在productData中
+	product := models.Product{}
+	err, productData := product.GetProduct(connRedis.DB, productID)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
+	//绑定从前端查到的值json，空的值就保持原来的值
+	json := models.Product{}
+	err = c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+	json.ProductId = productData.ProductId
+	if json.ProductName == "" {
+		json.ProductName = productData.ProductName
+	}
+	if json.ProductIntro == "" {
+		json.ProductIntro = productData.ProductIntro
+	}
+	if json.Price == "" {
+		json.Price = productData.Price
+	}
+	if json.StockNum == 0 {
+		json.StockNum = productData.StockNum
+	}
+	if json.ProductImg == ""{
+		json.ProductImg = productData.ProductImg
+	}
+
+	err = json.UpdateProduct(connRedis.DB, productID)
+	if err == nil {
+		c.JSON(200, gin.H{
+			"status": true,
+			"result": json,
+		})
+	} else {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
 
 }

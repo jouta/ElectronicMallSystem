@@ -54,6 +54,7 @@ func main() {
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
+		admin.POST("/UpdateProduct", redis_controllers.UpdateProduct)
 		//用户增删改查mysql
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)

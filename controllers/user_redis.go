@@ -181,12 +181,10 @@ func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
 
 	err = json.UpdateUser(connRedis.DB, userID)
 	if err == nil {
-		if err == nil {
-			c.JSON(200, gin.H{
-				"status": true,
-				"result": json,
-			})
-		}
+		c.JSON(200, gin.H{
+			"status": true,
+			"result": json,
+		})
 	} else {
 		resData := &Response{
 			status:  false,
@@ -197,8 +195,6 @@ func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
 			"message": resData.message,
 		})
 	}
-
-
 
 }
 
