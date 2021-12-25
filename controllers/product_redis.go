@@ -54,7 +54,7 @@ func (connRedis *ConnRedis) GetOneProduct(ctx *gin.Context) {
 	productId = ctx.Query("productId")
 	product := models.Product{}
 	err, productData := product.GetProduct(connRedis.DB, productId)
-	fmt.Println(productData)
+	productData.ProductId = productId
 	if err != nil {
 		resData := &Response{
 			status:  false,
