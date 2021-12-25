@@ -5,6 +5,11 @@ import (
 	"log"
 )
 
+type Response struct {
+	status  bool
+	message string
+	result  string
+}
 
 type ConnRedis struct {
 	DB redis.Conn

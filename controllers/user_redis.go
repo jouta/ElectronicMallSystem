@@ -8,11 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type Response struct {
-	status  bool
-	message string
-	result  string
-}
 
 func (connRedis *ConnRedis) GetUser(ctx *gin.Context) {
 	var userID string

@@ -44,10 +44,12 @@ func main() {
 
 	admin := r.Group("/admin")
 	{
-		// 商品增删改
-		admin.POST("/createProduct", controllers.CreateProduct)
+		// 商品增删改mysql
+		admin.POST("/CreateProduct_mysql", controllers.CreateProduct_mysql)
 		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
 		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
+		// 商品增删改redis
+		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		//用户增删改查
 		admin.POST("/CreateUser", controllers.CreateUser)
 		admin.GET("/ShowUser", controllers.ShowUser)
