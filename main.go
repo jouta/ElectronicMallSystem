@@ -53,7 +53,8 @@ func main() {
 		admin.GET("/ShowUser", controllers.ShowUser)
 		//redistest
 		admin.GET("/addUser", redis_controllers.AddUser)
-
+		admin.GET("/addUser", redis_controllers.GetTop)
+		admin.GET("/addUser", redis_controllers.GetUser)
 	}
 
 	common := r.Group("/common")
