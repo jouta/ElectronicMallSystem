@@ -63,12 +63,12 @@ func (product Product) GetAllProduct(c redis.Conn) (error, []Product) {
 		if err != nil {
 			return err, listProducts
 		}
-		fmt.Println(listProducts)
 		listProducts = append(listProducts, products)
 	}
 	return nil, listProducts
 }
 
+<<<<<<< HEAD
 func (product Product) GetProduct(c redis.Conn, productId string) (error, Product) {
 	values, err := redis.Values(c.Do("HGETALL", productId))
 	if len(values) < 1 {
@@ -93,3 +93,5 @@ func (product Product) UpdateProduct(c redis.Conn, userid string) error {
 	}
 	return nil
 }
+=======
+>>>>>>> origin/redis

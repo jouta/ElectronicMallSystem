@@ -1,10 +1,15 @@
 package controllers
 
 import (
+<<<<<<< HEAD
+=======
+	"fmt"
+	"github.com/Chain-Zhang/pinyin"
+>>>>>>> origin/redis
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"mall/models"
-	_ "strconv"
+	"strings"
 )
 
 
@@ -20,7 +25,7 @@ func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 	product := models.Product{}
 	err := ctx.ShouldBindJSON(&json)
 	if err == nil{
-		product.ProductId = "product-" + uuid.New().String()
+		product.ProductId = "product-" +  uuid.New().String()
 		product.ProductName = json.ProductName
 		product.ProductIntro = json.ProductIntro
 		product.Price = json.Price
@@ -127,11 +132,19 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 
 }
 
+<<<<<<< HEAD
 func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 	productID := c.Query("productid")
 	//先查询，获取原来的值放在productData中
 	product := models.Product{}
 	err, productData := product.GetProduct(connRedis.DB, productID)
+=======
+func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
+	var keyWord string
+	keyWord = c.Query("keyWord")
+	product := models.Product{}
+	err, productData := product.GetAllProduct(connRedis.DB)
+>>>>>>> origin/redis
 	if err != nil {
 		resData := &Response{
 			status:  false,
@@ -143,6 +156,7 @@ func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 		})
 		return
 	}
+<<<<<<< HEAD
 
 	//绑定从前端查到的值json，空的值就保持原来的值
 	json := models.Product{}
@@ -192,3 +206,34 @@ func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 	}
 
 }
+=======
+	var listProducts []models.Product
+	str1, err := pinyin.New(keyWord).Convert()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, productdata := range productData {
+		products := models.Product{}
+		str2, err := pinyin.New(productdata.ProductName).Convert()
+		if err != nil {
+			fmt.Println(err)
+		}
+		reg := strings.Contains(str2, str1)
+		if(reg == true){
+			products.ProductId = productdata.ProductId
+			products.ProductName = productdata.ProductName
+			products.ProductIntro = productdata.ProductIntro
+			products.Price = productdata.Price
+			products.StockNum = productdata.StockNum
+			products.ProductImg = productdata.ProductImg
+			listProducts = append(listProducts, products)
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listProducts,
+	})
+
+}
+>>>>>>> origin/redis
