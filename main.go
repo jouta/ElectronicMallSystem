@@ -54,7 +54,7 @@ func main() {
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
-		//用户增删改查
+		//用户增删改查mysql
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)
 		// 用户增删改redis
@@ -62,6 +62,7 @@ func main() {
 		admin.GET("/ShowUser", redis_controllers.ShowUser)
 		admin.GET("/GetOneUser", redis_controllers.GetUser)
 		admin.DELETE("/DeleteUser", redis_controllers.DeleteUser)
+		admin.POST("/UpdateUser", redis_controllers.UpdateUser)
 
 	}
 
