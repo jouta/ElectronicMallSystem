@@ -53,6 +53,7 @@ func main() {
 		// 商品增删改redis
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
+		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
 		//用户增删改查
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)

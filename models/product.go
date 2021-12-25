@@ -34,13 +34,14 @@ func (product Product) GetProduct(c redis.Conn, productId string) (error, Produc
 }
 
 
-//func  DeleteProduct(c redis.Conn, productId string) (error,del) {
-//	del, err := redis.Bool(c.Do("DEL",productId))
-//	if err != nil{
-//		return  err, del
-//	}
-//	return  nil, del
-//}
+func  DeleteProduct(c redis.Conn, productId string) (error) {
+	del, err := redis.Bool(c.Do("DEL", productId))
+	fmt.Println(del)
+	if err != nil{
+		return  err
+	}
+	return  nil
+}
 
 
 func (product Product) CreateProduct(c redis.Conn) error {
