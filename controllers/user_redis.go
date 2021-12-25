@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"mall/models"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"mall/models"
 )
 
 type Response struct {
@@ -14,9 +12,79 @@ type Response struct {
 	result  string
 }
 
-func (connRedis *ConnRedis) GetUser(ctx *gin.Context) {
+func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
+	json := models.User{}
+	json.UserId = "user-" + uuid.New().String()
+	if err := c.ShouldBindJSON(&json); err == nil {
+		err = json.Create(connRedis.DB)
+		if err == nil {
+			if err == nil {
+				c.JSON(200, gin.H{
+					"status": true,
+					"result": json,
+				})
+			}
+		} else {
+			resData := &Response{
+				status:  false,
+				message: err.Error(),
+			}
+			c.JSON(500, gin.H{
+				"status":  resData.status,
+				"message": resData.message,
+			})
+		}
+
+	}
+
+	//defer connRedis.DB.Close()
+
+}
+
+//查询所有用户
+func (connRedis *ConnRedis) ShowUser(c *gin.Context) {
+	user := models.User{}
+	err, userData := user.GetAllUser(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
+	type ShowUser struct {
+		UserId string  `json:"userId" form:"userId"  binding:"required"`
+		UserName string `json:"userName" form:"userName"  binding:"required"`
+		Address  string `json:"address" form:"address"  binding:"required"`
+		UserType int `json:"userType" form:"userType"  binding:"required"`
+	}
+	var listUsers []ShowUser
+
+	for _, userdata := range userData {
+		users := ShowUser{}
+		users.UserId = userdata.UserId
+		users.UserName = userdata.UserName
+		users.Address = userdata.Address
+		users.UserType = userdata.UserType
+		listUsers = append(listUsers, users)
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listUsers,
+	})
+
+}
+
+//查询单个用户
+func (connRedis *ConnRedis) GetUser(c *gin.Context) {
 	var userID string
-	userID = ctx.Query("userid")
+	userID = c.Query("userid")
 	user := models.User{}
 	err, userData := user.GetUser(connRedis.DB, userID)
 	if err != nil {
@@ -24,51 +92,36 @@ func (connRedis *ConnRedis) GetUser(ctx *gin.Context) {
 			status:  false,
 			message: err.Error(),
 		}
-		ctx.JSON(500, gin.H{
+		c.JSON(500, gin.H{
 			"status":  resData.status,
 			"message": resData.message,
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
+	type ShowUser struct {
+		UserId string  `json:"userId" form:"userId"  binding:"required"`
+		UserName string `json:"userName" form:"userName"  binding:"required"`
+		Address  string `json:"address" form:"address"  binding:"required"`
+		UserType int `json:"userType" form:"userType"  binding:"required"`
+	}
+
+	users := ShowUser{}
+	users.UserId = userData.UserId
+	users.UserName = userData.UserName
+	users.Address = userData.Address
+	users.UserType = userData.UserType
+
+	c.JSON(200, gin.H{
 		"status": true,
-		"result": userData,
+		"result": users,
 	})
+
 }
 
-func (connRedis *ConnRedis) AddUser(ctx *gin.Context) {
-	var scoreValue int
-	scoreValue, err := strconv.Atoi(ctx.Query("score"))
-	userName := ctx.Query("name")
-	if err != nil {
-		// handle error
-		ctx.JSON(500, gin.H{"error": "user invalid"})
-	}
 
-	user := models.User{}
-	user.Id = "user-" + uuid.New().String()
-	user.Score = scoreValue
-	user.Name = userName
-	err = user.Create(connRedis.DB)
-	if err == nil {
-		if err == nil {
-			ctx.JSON(200, gin.H{
-				"status": true,
-				"result": user,
-			})
-		}
-	} else {
-		resData := &Response{
-			status:  false,
-			message: err.Error(),
-		}
-		ctx.JSON(500, gin.H{
-			"status":  resData.status,
-			"message": resData.message,
-		})
-	}
-}
 
+
+/*
 func (connRedis *ConnRedis) GetTop(ctx *gin.Context) {
 	var lengthValue int
 	lengthValue, err := strconv.Atoi(ctx.Query("length"))
@@ -85,3 +138,4 @@ func (connRedis *ConnRedis) GetTop(ctx *gin.Context) {
 		"result": topData,
 	})
 }
+*/

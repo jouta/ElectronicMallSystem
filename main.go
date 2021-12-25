@@ -49,11 +49,12 @@ func main() {
 		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
 		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
 		//用户增删改查
-		admin.POST("/CreateUser", controllers.CreateUser)
-		admin.GET("/ShowUser", controllers.ShowUser)
+		admin.POST("/CreateUser_mysql", controllers.CreateUser)
+		admin.GET("/ShowUser_mysql", controllers.ShowUser)
 		//redistest
-		admin.GET("/addUser", redis_controllers.AddUser)
-		admin.GET("/getTop", redis_controllers.GetTop)
+		//admin.GET("/addUser", redis_controllers.AddUser)
+		admin.POST("/CreateUser", redis_controllers.CreateUser)
+		admin.GET("/ShowUser", redis_controllers.ShowUser)
 		admin.GET("/getUser", redis_controllers.GetUser)
 	}
 
