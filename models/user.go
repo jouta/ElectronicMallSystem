@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 )
 /*
@@ -49,7 +48,6 @@ func (user User) GetAllUser(c redis.Conn) (error, []User) {
 
 func (user User) GetUser(c redis.Conn, userid string) (error, User) {
 	values, err := redis.Values(c.Do("HGETALL", userid))
-	fmt.Println(values)
 	if len(values) < 1 {
 		return errors.New("User is not defined"), user
 	}
@@ -77,7 +75,21 @@ func (user User) Create(c redis.Conn) error {
 	return nil
 }
 
+func  DeleteUser(c redis.Conn, userId string) (error) {
+	_, err := redis.Bool(c.Do("DEL", userId))
+	if err != nil{
+		return  err
+	}
+	return  nil
+}
 
+func (user User) UpdateUser(c redis.Conn, userid string) error {
+	_, err := c.Do("HSET", userid, "userName", user.UserName, "passWord", user.PassWord, "address", user.Address, "userType", user.UserType)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 /*
 func (user User) GetTop(c redis.Conn, length int) ([]string, error) {

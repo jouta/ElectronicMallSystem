@@ -54,20 +54,23 @@ func main() {
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
-		//用户增删改查
+		//用户增删改查mysql
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)
-		//redistest
-		//admin.GET("/addUser", redis_controllers.AddUser)
+		// 用户增删改redis
 		admin.POST("/CreateUser", redis_controllers.CreateUser)
 		admin.GET("/ShowUser", redis_controllers.ShowUser)
-		admin.GET("/getUser", redis_controllers.GetUser)
+		admin.GET("/GetOneUser", redis_controllers.GetUser)
+		admin.DELETE("/DeleteUser", redis_controllers.DeleteUser)
+		admin.POST("/UpdateUser", redis_controllers.UpdateUser)
+
 	}
 
 	common := r.Group("/common")
 	{
 		//商品列表
-		common.GET("/ShowProduct", controllers.ShowProduct)
+		common.GET("/ShowProduct_mysql", controllers.ShowProduct)
+		common.GET("/ShowProduct", redis_controllers.ShowProduct)
 	}
 
 
