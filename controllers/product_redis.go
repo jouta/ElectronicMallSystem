@@ -48,3 +48,26 @@ func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 		})
 	}
 }
+
+func (connRedis *ConnRedis) GetOneProduct(ctx *gin.Context) {
+	var productId string
+	productId = ctx.Query("productId")
+	product := models.Product{}
+	err, productData := product.GetProduct(connRedis.DB, productId)
+	fmt.Println(productData)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		ctx.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"status": true,
+		"result": productData,
+	})
+}

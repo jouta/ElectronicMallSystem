@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -13,6 +14,7 @@ type User struct {
 
 func (user User) GetUser(c redis.Conn, userid string) (error, User) {
 	values, err := redis.Values(c.Do("HGETALL", userid))
+	fmt.Println(values)
 	if len(values) < 1 {
 		return errors.New("User is not defined"), user
 	}
