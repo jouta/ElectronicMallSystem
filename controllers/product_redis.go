@@ -72,7 +72,6 @@ func (connRedis *ConnRedis) GetOneProduct(ctx *gin.Context) {
 	})
 }
 
-//DeleteProduct
 func (connRedis *ConnRedis) DeleteProduct(ctx *gin.Context) {
 	var productId string
 	productId = ctx.Query("productId")
@@ -92,4 +91,40 @@ func (connRedis *ConnRedis) DeleteProduct(ctx *gin.Context) {
 		"status": true,
 		"result": productId,
 	})
+}
+
+func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
+	product := models.Product{}
+	err, productData := product.GetAllProduct(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
+
+	var listProducts []models.Product
+
+	for _, productdata := range productData {
+		products := models.Product{}
+		products.ProductId = productdata.ProductId
+		products.ProductName = productdata.ProductName
+		products.ProductIntro = productdata.ProductIntro
+		products.Price = productdata.Price
+		products.StockNum = productdata.StockNum
+		products.ProductImg = productdata.ProductImg
+		listProducts = append(listProducts, products)
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listProducts,
+	})
+
 }
