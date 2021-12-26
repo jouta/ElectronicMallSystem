@@ -8,14 +8,15 @@ import (
 )
 
 type Order struct {
-	OrderId     string `json:"orderId" redis:"orderId"`
-	UserId      string `json:"userId" redis:"userId"`
-	ProductId   string `json:"productId" redis:"productId"`
-	Price       string `json:"price" redis:"price"`
-	OrderStatus int    `json:"orderStatus" redis:"orderStatus"`
-	PayTime     string `json:"payTime" redis:"payTime"`
-	OrderTime   string `json:"orderTime" redis:"orderTime"`
-	Remark      string `json:"remark" redis:"remark"`
+	OrderId     string  `json:"orderId" redis:"orderId"`
+	UserId      string  `json:"userId" redis:"userId"`
+	ProductId   string  `json:"productId" redis:"productId"`
+	Price       float64 `json:"price" redis:"price"`
+	OrderStatus int     `json:"orderStatus" redis:"orderStatus"`
+	PayTime     string  `json:"payTime" redis:"payTime"`
+	OrderTime   string  `json:"orderTime" redis:"orderTime"`
+	Remark      string  `json:"remark" redis:"remark"`
+	ProductNum  int     `json:"productNum" redis:"productNum"`
 }
 
 func (order Order) CreateOrder(c redis.Conn) error {
@@ -32,6 +33,7 @@ func (order Order) CreateOrder(c redis.Conn) error {
 		"payTime", order.PayTime,
 		"orderTime", order.OrderTime,
 		"remark", order.Remark,
+		"productNum", order.ProductNum,
 	)
 	if err != nil {
 		return err
@@ -100,6 +102,7 @@ func (order Order) PayOrder(c redis.Conn, orderid string) error {
 		"payTime", order.PayTime,
 		"orderTime", order.OrderTime,
 		"remark", order.Remark,
+		"productNum", order.ProductNum,
 	)
 	if err != nil {
 		return err

@@ -1,29 +1,28 @@
 package controllers
 
 import (
-
 	"fmt"
+	"mall/models"
+	"strings"
+
 	"github.com/Chain-Zhang/pinyin"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"mall/models"
-	"strings"
 )
-
 
 func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 	type CreateProduct struct {
-		ProductName  string `form:"productName" json:"productName" binding:"required"`
-		ProductIntro string `form:"productIntro" json:"productIntro"`
-		Price    string `form:"price" json:"price" binding:"required"`
-		StockNum int    `form:"stockNum" json:"stockNum" binding:"required"`
-		ProductImg string `form:"productImg" json:"productImg" binding:"required"`
+		ProductName  string  `form:"productName" json:"productName" binding:"required"`
+		ProductIntro string  `form:"productIntro" json:"productIntro"`
+		Price        float64 `form:"price" json:"price" binding:"required"`
+		StockNum     int     `form:"stockNum" json:"stockNum" binding:"required"`
+		ProductImg   string  `form:"productImg" json:"productImg" binding:"required"`
 	}
 	var json CreateProduct
 	product := models.Product{}
 	err := ctx.ShouldBindJSON(&json)
-	if err == nil{
-		product.ProductId = "product-" +  uuid.New().String()
+	if err == nil {
+		product.ProductId = "product-" + uuid.New().String()
 		product.ProductName = json.ProductName
 		product.ProductIntro = json.ProductIntro
 		product.Price = json.Price
@@ -109,7 +108,6 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 		return
 	}
 
-
 	var listProducts []models.Product
 
 	for _, productdata := range productData {
@@ -129,7 +127,6 @@ func (connRedis *ConnRedis) ShowProduct(c *gin.Context) {
 	})
 
 }
-
 
 func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 	productID := c.Query("productid")
@@ -157,13 +154,13 @@ func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 	if json.ProductIntro == "" {
 		json.ProductIntro = productData.ProductIntro
 	}
-	if json.Price == "" {
+	if json.Price == 0.0 {
 		json.Price = productData.Price
 	}
 	if json.StockNum == 0 {
 		json.StockNum = productData.StockNum
 	}
-	if json.ProductImg == ""{
+	if json.ProductImg == "" {
 		json.ProductImg = productData.ProductImg
 	}
 
@@ -184,7 +181,6 @@ func (connRedis *ConnRedis) UpdateProduct(c *gin.Context) {
 		})
 	}
 }
-
 
 func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
 	var keyWord string
@@ -216,7 +212,7 @@ func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
 			fmt.Println(err)
 		}
 		reg := strings.Contains(str2, str1)
-		if(reg == true){
+		if reg == true {
 			products.ProductId = productdata.ProductId
 			products.ProductName = productdata.ProductName
 			products.ProductIntro = productdata.ProductIntro
@@ -233,4 +229,3 @@ func (connRedis *ConnRedis) SearchProduct(c *gin.Context) {
 	})
 
 }
-

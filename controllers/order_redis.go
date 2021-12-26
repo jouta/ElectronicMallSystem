@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"mall/models"
 	"time"
 
@@ -11,9 +10,10 @@ import (
 
 func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 	type CreateOrder struct {
-		UserId    string `form:"userId" json:"userId" binding:"required"`
-		ProductId string `form:"productId" json:"productId" binding:"required"`
-		Remark    string `form:"remark" json:"remark" binding:"required"`
+		UserId     string `form:"userId" json:"userId" binding:"required"`
+		ProductId  string `form:"productId" json:"productId" binding:"required"`
+		ProductNum int    `form:"productNum" json:"productNum" binding:"required"`
+		Remark     string `form:"remark" json:"remark" binding:"required"`
 	}
 
 	var json CreateOrder
@@ -25,12 +25,12 @@ func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 		order.ProductId = json.ProductId
 		order.OrderStatus = 1
 		order.Remark = json.Remark
+		order.ProductNum = json.ProductNum
 
 		product := models.Product{}
 		err1, productData := product.GetProduct(connRedis.DB, json.ProductId)
 		if err1 == nil {
-			order.Price = productData.Price
-
+			order.Price = productData.Price * float64(order.ProductNum)
 		}
 
 		timeUnix := time.Now().Unix() //已知的时间戳
@@ -39,7 +39,7 @@ func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 		order.PayTime = "" //空表示未支付
 
 	}
-	fmt.Println(order)
+
 	err = order.CreateOrder(connRedis.DB)
 	if err == nil {
 		ctx.JSON(200, gin.H{
@@ -75,13 +75,14 @@ func (connRedis *ConnRedis) ShowOrder(c *gin.Context) {
 	}
 
 	type ShowOrder struct {
-		OrderId     string `json:"orderId" form:"orderId" binding:"required"`
-		UserId      string `json:"userId" form:"userId"  binding:"required"`
-		ProductId   string `json:"productId" form:"productId" binding:"required"`
-		Price       string `json:"price" form:"price" binding:"required"`
-		OrderStatus int    `json:"orderStatus" form:"orderStatus" binding:"required"`
-		PayTime     string `json:"payTime" form:"payTime" binding:"required"`
-		OrderTime   string `json:"orderTime" form:"orderTime" binding:"required"`
+		OrderId     string  `json:"orderId" form:"orderId" binding:"required"`
+		UserId      string  `json:"userId" form:"userId"  binding:"required"`
+		ProductId   string  `json:"productId" form:"productId" binding:"required"`
+		Price       float64 `json:"price" form:"price" binding:"required"`
+		OrderStatus int     `json:"orderStatus" form:"orderStatus" binding:"required"`
+		PayTime     string  `json:"payTime" form:"payTime" binding:"required"`
+		OrderTime   string  `json:"orderTime" form:"orderTime" binding:"required"`
+		ProductNum  int     `json:"productnum" form:"productNum" binding:"required"`
 	}
 	var listOrders []ShowOrder
 
@@ -94,6 +95,7 @@ func (connRedis *ConnRedis) ShowOrder(c *gin.Context) {
 		orders.OrderStatus = orderdata.OrderStatus
 		orders.PayTime = orderdata.PayTime
 		orders.OrderTime = orderdata.OrderTime
+		order.ProductNum = orderdata.ProductNum
 		listOrders = append(listOrders, orders)
 	}
 
