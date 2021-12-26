@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"mall/controllers"
 	"net/http"
-)
 
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+)
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -26,7 +26,7 @@ func Cors() gin.HandlerFunc {
 
 func main() {
 
-    //redis连接
+	//redis连接
 	redis_controllers := controllers.ConnRedis{}
 	redis_controllers.Connect()
 
@@ -63,7 +63,8 @@ func main() {
 		admin.GET("/GetOneUser", redis_controllers.GetUser)
 		admin.DELETE("/DeleteUser", redis_controllers.DeleteUser)
 		admin.POST("/UpdateUser", redis_controllers.UpdateUser)
-
+		//查看所有订单
+		admin.GET("/ShowOrder", redis_controllers.ShowOrder)
 	}
 
 	common := r.Group("/common")
@@ -73,7 +74,14 @@ func main() {
 		common.GET("/ShowProduct", redis_controllers.ShowProduct)
 	}
 
+	user := r.Group("/user")
+	{
+		//创建订单
+		user.POST("/CreateOrder", redis_controllers.CreateOrder)
+		//支付订单
+		user.POST("/PayOrder", redis_controllers.PayOrder)
 
+	}
 
 	r.Run(":3000")
 }

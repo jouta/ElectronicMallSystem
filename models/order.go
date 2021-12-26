@@ -85,3 +85,11 @@ func (order Order) GetAllOrder(c redis.Conn) (error, []Order) {
 	}
 	return nil, listOrders
 }
+
+func (order Order) PayOrder(c redis.Conn, orderid string) error {
+	_, err := c.Do("HSET", orderid, "payTime", order.PayTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
