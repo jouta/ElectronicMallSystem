@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"log"
-
 	"github.com/garyburd/redigo/redis"
+	"log"
 )
 
 type Response struct {
@@ -18,7 +17,7 @@ type ConnRedis struct {
 
 func (h *ConnRedis) Connect() {
 	var err error
-	h.DB, err = redis.Dial("tcp", "127.0.0.1:6380")
+	h.DB, err = redis.Dial("tcp","192.168.1.105:6380",redis.DialPassword("root"))
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
