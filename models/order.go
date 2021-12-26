@@ -15,6 +15,7 @@ type Order struct {
 	OrderStatus int    `json:"orderStatus" redis:"orderStatus"`
 	PayTime     string `json:"payTime" redis:"payTime"`
 	OrderTime   string `json:"orderTime" redis:"orderTime"`
+	Remark      string `json:"remark" redis:"remark"`
 }
 
 func (order Order) CreateOrder(c redis.Conn) error {
@@ -28,7 +29,9 @@ func (order Order) CreateOrder(c redis.Conn) error {
 		"price", order.Price,
 		"orderStatus", order.OrderStatus,
 		"payTime", order.PayTime,
-		"orderTime", order.OrderTime)
+		"orderTime", order.OrderTime,
+		"remark", order.Remark,
+	)
 	if err != nil {
 		return err
 	}
@@ -87,7 +90,7 @@ func (order Order) GetAllOrder(c redis.Conn) (error, []Order) {
 }
 
 func (order Order) PayOrder(c redis.Conn, orderid string) error {
-	_, err := c.Do("HSET", orderid, "payTime", order.PayTime)
+	_, err := c.Do("HSET", orderid, "payTime", order.PayTime, "orderStatus", 0)
 	if err != nil {
 		return err
 	}

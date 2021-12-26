@@ -11,9 +11,9 @@ import (
 
 func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 	type CreateOrder struct {
-		UserId      string `form:"userId" json:"userId" binding:"required"`
-		ProductId   string `form:"productId" json:"productId" binding:"required"`
-		OrderStatus int    `form:"orderStatus" json:"orderStatus" binding:"required"`
+		UserId    string `form:"userId" json:"userId" binding:"required"`
+		ProductId string `form:"productId" json:"productId" binding:"required"`
+		Remark    string `form:"remark" json:"remark" binding:"required"`
 	}
 
 	var json CreateOrder
@@ -23,7 +23,8 @@ func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 		order.OrderId = "order-" + uuid.New().String()
 		order.UserId = json.UserId
 		order.ProductId = json.ProductId
-		order.OrderStatus = json.OrderStatus
+		order.OrderStatus = 1
+		order.Remark = json.Remark
 
 		product := models.Product{}
 		err1, productData := product.GetProduct(connRedis.DB, json.ProductId)
@@ -35,7 +36,7 @@ func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 		timeUnix := time.Now().Unix() //已知的时间戳
 		timeStr := time.Unix(timeUnix, 0).Format("2006-01-02 15:04:05")
 		order.OrderTime = timeStr
-		order.PayTime = "" //?
+		order.PayTime = "" //空表示未支付
 
 	}
 	fmt.Println(order)
