@@ -49,7 +49,7 @@ func main() {
 		// 商品增删改mysql
 		admin.POST("/CreateProduct_mysql", controllers.CreateProduct_mysql)
 		admin.POST("/UpdateProduct/:productId", controllers.UpdateProduct)
-		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
+		admin.GET("/DeleteProduct/:productId", controllers.DeleteProduct)
 		// 商品增删改redis
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
 		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
@@ -61,7 +61,7 @@ func main() {
 		admin.POST("/CreateUser", redis_controllers.CreateUser)
 		admin.GET("/ShowUser", redis_controllers.ShowUser)
 		admin.GET("/GetOneUser", redis_controllers.GetUser)
-		admin.DELETE("/DeleteUser", redis_controllers.DeleteUser)
+		admin.GET("/DeleteUser", redis_controllers.DeleteUser)
 		admin.POST("/UpdateUser", redis_controllers.UpdateUser)
 		//查看所有订单
 		admin.GET("/ShowOrder", redis_controllers.ShowOrder)
