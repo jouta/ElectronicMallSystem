@@ -13,12 +13,10 @@ func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&json); err == nil {
 		err = json.Create(connRedis.DB)
 		if err == nil {
-			if err == nil {
-				c.JSON(200, gin.H{
-					"status": true,
-					"result": json,
-				})
-			}
+			c.JSON(200, gin.H{
+				"status": true,
+				"result": json,
+			})
 		} else {
 			resData := &Response{
 				status:  false,
@@ -181,12 +179,10 @@ func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
 
 	err = json.UpdateUser(connRedis.DB, userID)
 	if err == nil {
-		if err == nil {
-			c.JSON(200, gin.H{
-				"status": true,
-				"result": json,
-			})
-		}
+		c.JSON(200, gin.H{
+			"status": true,
+			"result": json,
+		})
 	} else {
 		resData := &Response{
 			status:  false,
@@ -198,7 +194,53 @@ func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
 		})
 	}
 
+}
 
+//用户登录
+func (connRedis *ConnRedis) Login(c *gin.Context) {
+	json := models.User{}
+	err := c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+
+	user := models.User{}
+	err, userData := user.GetAllUser(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	flag := false
+	for _, userdata := range userData {
+		if userdata.UserName == json.UserName && userdata.PassWord == json.PassWord && userdata.UserType == json.UserType{
+			c.JSON(200, gin.H{
+				"status": true,
+				"result": userdata,
+			})
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		c.JSON(500, gin.H{
+			"status": false,
+			"message": "用户名或密码不正确，或者用户类型选择错误",
+		})
+	}
 
 }
 

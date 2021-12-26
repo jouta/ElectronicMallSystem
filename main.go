@@ -52,8 +52,8 @@ func main() {
 		admin.DELETE("/DeleteProduct/:productId", controllers.DeleteProduct)
 		// 商品增删改redis
 		admin.POST("/CreateProduct", redis_controllers.CreateProduct)
-		admin.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		admin.GET("/DeleteProduct", redis_controllers.DeleteProduct)
+		admin.POST("/UpdateProduct", redis_controllers.UpdateProduct)
 		//用户增删改查mysql
 		admin.POST("/CreateUser_mysql", controllers.CreateUser)
 		admin.GET("/ShowUser_mysql", controllers.ShowUser)
@@ -72,6 +72,9 @@ func main() {
 		//商品列表
 		common.GET("/ShowProduct_mysql", controllers.ShowProduct)
 		common.GET("/ShowProduct", redis_controllers.ShowProduct)
+		common.GET("/GetOneProduct", redis_controllers.GetOneProduct)
+		common.GET("/SearchProduct", redis_controllers.SearchProduct)
+		common.POST("/Login", redis_controllers.Login)
 	}
 
 	user := r.Group("/user")
