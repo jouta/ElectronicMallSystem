@@ -172,14 +172,11 @@ func (connRedis *ConnRedis) PayOrder(c *gin.Context) {
 	orderData.OrderStatus = 0
 
 	err = orderData.PayOrder(connRedis.DB, orderID)
-
 	if err == nil {
-		if err == nil {
-			c.JSON(200, gin.H{
-				"status": true,
-				"result": order,
-			})
-		}
+		c.JSON(200, gin.H{
+			"status": true,
+			"result": orderData,
+		})
 	} else {
 		resData := &Response{
 			status:  false,

@@ -24,6 +24,7 @@ func (order Order) CreateOrder(c redis.Conn) error {
 		return err
 	}
 	_, err = c.Do("HSET", order.OrderId,
+		"orderId", order.OrderId,
 		"userId", order.UserId,
 		"productId", order.ProductId,
 		"price", order.Price,
@@ -90,7 +91,16 @@ func (order Order) GetAllOrder(c redis.Conn) (error, []Order) {
 }
 
 func (order Order) PayOrder(c redis.Conn, orderid string) error {
-	_, err := c.Do("HSET", orderid, "payTime", order.PayTime, "orderStatus", 0)
+	_, err := c.Do("HSET", order.OrderId,
+		"orderId", order.OrderId,
+		"userId", order.UserId,
+		"productId", order.ProductId,
+		"price", order.Price,
+		"orderStatus", order.OrderStatus,
+		"payTime", order.PayTime,
+		"orderTime", order.OrderTime,
+		"remark", order.Remark,
+	)
 	if err != nil {
 		return err
 	}
