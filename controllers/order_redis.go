@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"mall/models"
 	"time"
 
@@ -281,4 +282,48 @@ func (connRedis *ConnRedis) ShoppingCart(c *gin.Context) {
 		"status": true,
 		"result": listOrders,
 	})
+}
+
+func (connRedis *ConnRedis) OrderTimeOut() {
+	ticker := time.Tick(time.Second) //定义一个1秒间隔的定时器
+	for _ = range ticker {
+		order := models.Order{}
+		err, orderData := order.GetAllOrder(connRedis.DB)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//遍历
+		for _, orderdata := range orderData {
+			//如果是未支付订单
+			if orderdata.OrderStatus == 1 {
+				loc, err := time.LoadLocation("Local")
+				dt, err := time.ParseInLocation("2006-01-02 15:04:05", orderdata.OrderTime, loc)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				minute, _ := time.ParseDuration("5m")
+				TimeOut := dt.Add(minute) //超时时间
+
+				Now := time.Now()
+				if Now.After(TimeOut) {
+					orderdata.OrderStatus = 2
+					err = orderdata.OrderTimeOut(connRedis.DB, orderdata.OrderId)
+					if err != nil {
+						fmt.Println(err)
+					}
+					//恢复库存
+					product := models.Product{}
+					err1, productData := product.GetProduct(connRedis.DB, orderdata.ProductId)
+					if err1 == nil {
+						productData.StockNum += orderdata.ProductNum
+						productData.UpdateProduct(connRedis.DB, productData.ProductId)
+					}
+				}
+			}
+		}
+
+	}
+
 }

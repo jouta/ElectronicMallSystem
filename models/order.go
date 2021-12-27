@@ -29,10 +29,12 @@ func (order Order) CreateOrder(c redis.Conn) error {
 
 	_, err := c.Do("MULTI") //事务开始
 	if err != nil {
+		_, err1 = c.Do("DISCARD") //放弃事务
 		return err
 	}
 	_, err = c.Do("SADD", "order", order.OrderId)
 	if err != nil {
+		_, err1 = c.Do("DISCARD") //放弃事务
 		return err
 	}
 	_, err = c.Do("HSET", order.OrderId,
@@ -47,6 +49,7 @@ func (order Order) CreateOrder(c redis.Conn) error {
 		"productNum", order.ProductNum,
 	)
 	if err != nil {
+		_, err1 = c.Do("DISCARD") //放弃事务
 		return err
 	}
 
@@ -55,6 +58,7 @@ func (order Order) CreateOrder(c redis.Conn) error {
 		"stockNum", stockNum,
 	)
 	if err != nil {
+		_, err1 = c.Do("DISCARD") //放弃事务
 		return err
 	}
 	_, err = c.Do("EXEC") //事务结束
@@ -117,15 +121,18 @@ func (order Order) GetAllOrder(c redis.Conn) (error, []Order) {
 
 func (order Order) PayOrder(c redis.Conn, orderid string) error {
 	_, err := c.Do("HSET", order.OrderId,
-		"orderId", order.OrderId,
-		"userId", order.UserId,
-		"productId", order.ProductId,
-		"price", order.Price,
 		"orderStatus", order.OrderStatus,
 		"payTime", order.PayTime,
-		"orderTime", order.OrderTime,
-		"remark", order.Remark,
-		"productNum", order.ProductNum,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (order Order) OrderTimeOut(c redis.Conn, orderid string) error {
+	_, err := c.Do("HSET", order.OrderId,
+		"orderStatus", order.OrderStatus,
 	)
 	if err != nil {
 		return err
