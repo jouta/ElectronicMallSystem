@@ -10,26 +10,60 @@ import (
 func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
 	json := models.User{}
 	json.UserId = "user-" + uuid.New().String()
-	if err := c.ShouldBindJSON(&json); err == nil {
-		err = json.Create(connRedis.DB)
-		if err == nil {
-			c.JSON(200, gin.H{
-				"status": true,
-				"result": json,
-			})
-		} else {
-			resData := &Response{
-				status:  false,
-				message: err.Error(),
-			}
-			c.JSON(500, gin.H{
-				"status":  resData.status,
-				"message": resData.message,
-			})
+	err := c.ShouldBindJSON(&json)
+	if err != nil{
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
 		}
-
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	//验证用户名是否已存在
+	user := models.User{}
+	err, userData := user.GetAllUser(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
 	}
 
+	for _, userdata := range userData {
+		if userdata.UserName == json.UserName {
+			c.JSON(500, gin.H{
+				"status":  false,
+				"message": "用户名已存在！",
+			})
+			return
+		}
+	}
+
+	//用户名不存在才创建用户
+	err = json.Create(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": json,
+	})
 	//defer connRedis.DB.Close()
 
 }
@@ -162,6 +196,7 @@ func (connRedis *ConnRedis) UpdateUser(c *gin.Context) {
 			"status":  resData.status,
 			"message": resData.message,
 		})
+		return
 	}
 	json.UserId = userData.UserId
 	if json.UserName == "" {
@@ -209,6 +244,7 @@ func (connRedis *ConnRedis) Login(c *gin.Context) {
 			"status":  resData.status,
 			"message": resData.message,
 		})
+		return
 	}
 
 	user := models.User{}
@@ -241,6 +277,38 @@ func (connRedis *ConnRedis) Login(c *gin.Context) {
 			"message": "用户名或密码不正确，或者用户类型选择错误",
 		})
 	}
+
+}
+
+//根据用户名返回用户ID
+func (connRedis *ConnRedis) GetUserId(c *gin.Context) {
+	userNAME := c.Query("userName")
+	user := models.User{}
+	err, userData := user.GetAllUser(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
+	var userID string
+	for _, userdata := range userData {
+		if userdata.UserName == userNAME {
+			userID = userdata.UserId
+			break
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": userID,
+	})
 
 }
 
