@@ -30,6 +30,8 @@ func main() {
 	redis_controllers := controllers.ConnRedis{}
 	redis_controllers.Connect()
 
+	go redis_controllers.OrderTimeOut()
+
 	r := gin.Default()
 	r.Use(Cors())
 	gin.SetMode(viper.GetString("mode"))

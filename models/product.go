@@ -83,8 +83,8 @@ func (product Product) GetProduct(c redis.Conn, productId string) (error, Produc
 	}
 }
 
-func (product Product) UpdateProduct(c redis.Conn, userid string) error {
-	_, err := c.Do("HSET", userid, "productName", product.ProductName, "productIntro", product.ProductIntro, "price", product.Price, "stockNum", product.StockNum, "productImg", product.ProductImg)
+func (product Product) UpdateProduct(c redis.Conn, productid string) error {
+	_, err := c.Do("HSET", productid, "productName", product.ProductName, "productIntro", product.ProductIntro, "price", product.Price, "stockNum", product.StockNum, "productImg", product.ProductImg)
 	if err != nil {
 		return err
 	}
