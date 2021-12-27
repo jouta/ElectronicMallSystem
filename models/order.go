@@ -20,7 +20,18 @@ type Order struct {
 }
 
 func (order Order) CreateOrder(c redis.Conn) error {
-	_, err := c.Do("SADD", "order", order.OrderId)
+	//先获取product信息
+	product := Product{}
+	err1, productData := product.GetProduct(c, order.ProductId)
+	if err1 != nil {
+		return err1
+	}
+
+	_, err := c.Do("MULTI") //事务开始
+	if err != nil {
+		return err
+	}
+	_, err = c.Do("SADD", "order", order.OrderId)
 	if err != nil {
 		return err
 	}
@@ -38,12 +49,24 @@ func (order Order) CreateOrder(c redis.Conn) error {
 	if err != nil {
 		return err
 	}
+
+	stockNum := productData.StockNum - order.ProductNum
+	_, err = c.Do("HSET", order.ProductId,
+		"stockNum", stockNum,
+	)
+	if err != nil {
+		return err
+	}
+	_, err = c.Do("EXEC") //事务结束
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (order Order) GetOrder(c redis.Conn, orderId string) (error, Order) {
 	values, err := redis.Values(c.Do("HGETALL", orderId))
-	fmt.Println(values)
 	if len(values) < 1 {
 		return errors.New("Order is not defined"), order
 	}

@@ -65,6 +65,8 @@ func main() {
 		admin.POST("/UpdateUser", redis_controllers.UpdateUser)
 		//查看所有订单
 		admin.GET("/ShowOrder", redis_controllers.ShowOrder)
+		//删除订单
+		admin.POST("/DeleteOrder", redis_controllers.DeleteOrder)
 	}
 
 	common := r.Group("/common")
@@ -84,6 +86,10 @@ func main() {
 		user.POST("/CreateOrder", redis_controllers.CreateOrder)
 		//支付订单
 		user.POST("/PayOrder", redis_controllers.PayOrder)
+		//查看单个用户的所有订单
+		user.POST("/UserOrder", redis_controllers.UserOrder)
+		//购物车
+		user.POST("/ShoppingCart", redis_controllers.ShoppingCart)
 
 	}
 

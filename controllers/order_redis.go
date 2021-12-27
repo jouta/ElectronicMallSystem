@@ -30,6 +30,13 @@ func (connRedis *ConnRedis) CreateOrder(ctx *gin.Context) {
 		product := models.Product{}
 		err1, productData := product.GetProduct(connRedis.DB, json.ProductId)
 		if err1 == nil {
+			if order.ProductNum > productData.StockNum {
+				ctx.JSON(500, gin.H{
+					"status":  false,
+					"message": "商品数量应小于等于商品库存",
+				})
+				return
+			}
 			order.Price = productData.Price * float64(order.ProductNum)
 		}
 
@@ -82,6 +89,7 @@ func (connRedis *ConnRedis) ShowOrder(c *gin.Context) {
 		OrderStatus int     `json:"orderStatus" form:"orderStatus" binding:"required"`
 		PayTime     string  `json:"payTime" form:"payTime" binding:"required"`
 		OrderTime   string  `json:"orderTime" form:"orderTime" binding:"required"`
+		Remark      string  `json:"remark" form:"remark" binding:"required"`
 		ProductNum  int     `json:"productnum" form:"productNum" binding:"required"`
 	}
 	var listOrders []ShowOrder
@@ -95,7 +103,8 @@ func (connRedis *ConnRedis) ShowOrder(c *gin.Context) {
 		orders.OrderStatus = orderdata.OrderStatus
 		orders.PayTime = orderdata.PayTime
 		orders.OrderTime = orderdata.OrderTime
-		order.ProductNum = orderdata.ProductNum
+		orders.Remark = orderdata.Remark
+		orders.ProductNum = orderdata.ProductNum
 		listOrders = append(listOrders, orders)
 	}
 
@@ -190,4 +199,86 @@ func (connRedis *ConnRedis) PayOrder(c *gin.Context) {
 		})
 	}
 
+}
+
+//查看单个用户的所有订单
+func (connRedis *ConnRedis) UserOrder(c *gin.Context) {
+	json := models.User{}
+	err := c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+
+	order := models.Order{}
+	err, orderData := order.GetAllOrder(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	var listOrders []models.Order
+	for _, orderdata := range orderData {
+		if orderdata.UserId == json.UserId {
+			listOrders = append(listOrders, orderdata)
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listOrders,
+	})
+}
+
+//购物车
+func (connRedis *ConnRedis) ShoppingCart(c *gin.Context) {
+	json := models.User{}
+	err := c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+
+	order := models.Order{}
+	err, orderData := order.GetAllOrder(connRedis.DB)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+	var listOrders []models.Order
+	for _, orderdata := range orderData {
+		if orderdata.UserId == json.UserId && orderdata.OrderStatus == 1 {
+			listOrders = append(listOrders, orderdata)
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"status": true,
+		"result": listOrders,
+	})
 }

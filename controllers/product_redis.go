@@ -31,12 +31,10 @@ func (connRedis *ConnRedis) CreateProduct(ctx *gin.Context) {
 	}
 	err = product.CreateProduct(connRedis.DB)
 	if err == nil {
-		if err == nil {
-			ctx.JSON(200, gin.H{
-				"status": true,
-				"result": product,
-			})
-		}
+		ctx.JSON(200, gin.H{
+			"status": true,
+			"result": product,
+		})
 	} else {
 		resData := &Response{
 			status:  false,
