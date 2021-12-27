@@ -75,6 +75,7 @@ func main() {
 		common.GET("/GetOneProduct", redis_controllers.GetOneProduct)
 		common.GET("/SearchProduct", redis_controllers.SearchProduct)
 		common.POST("/Login", redis_controllers.Login)
+		common.GET("/GetUserId", redis_controllers.GetUserId)
 	}
 
 	user := r.Group("/user")
