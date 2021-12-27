@@ -20,6 +20,13 @@ type Order struct {
 }
 
 func (order Order) CreateOrder(c redis.Conn) error {
+	//先获取product信息
+	product := Product{}
+	err1, productData := product.GetProduct(c, order.ProductId)
+	if err1 != nil {
+		return err1
+	}
+
 	_, err := c.Do("MULTI") //事务开始
 	if err != nil {
 		return err
@@ -42,12 +49,7 @@ func (order Order) CreateOrder(c redis.Conn) error {
 	if err != nil {
 		return err
 	}
-	//先查product的stockNum
-	product := Product{}
-	err1, productData := product.GetProduct(c, order.ProductId)
-	if err1 != nil {
-		return err1
-	}
+
 	stockNum := productData.StockNum - order.ProductNum
 	_, err = c.Do("HSET", order.ProductId,
 		"stockNum", stockNum,
