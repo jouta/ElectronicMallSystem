@@ -69,6 +69,8 @@ func main() {
 		admin.GET("/ShowOrder", redis_controllers.ShowOrder)
 		//删除订单
 		admin.POST("/DeleteOrder", redis_controllers.DeleteOrder)
+		//修改订单
+		admin.POST("/UpdateOrder", redis_controllers.UpdateOrder)
 	}
 
 	common := r.Group("/common")

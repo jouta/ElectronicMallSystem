@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"mall/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"mall/models"
 )
-
 
 func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
 	json := models.User{}
@@ -85,10 +85,10 @@ func (connRedis *ConnRedis) ShowUser(c *gin.Context) {
 	}
 
 	type ShowUser struct {
-		UserId string  `json:"userId" form:"userId"  binding:"required"`
+		UserId   string `json:"userId" form:"userId"  binding:"required"`
 		UserName string `json:"userName" form:"userName"  binding:"required"`
 		Address  string `json:"address" form:"address"  binding:"required"`
-		UserType int `json:"userType" form:"userType"  binding:"required"`
+		UserType int    `json:"userType" form:"userType"  binding:"required"`
 	}
 	var listUsers []ShowUser
 
@@ -126,10 +126,10 @@ func (connRedis *ConnRedis) GetUser(c *gin.Context) {
 		return
 	}
 	type ShowUser struct {
-		UserId string  `json:"userId" form:"userId"  binding:"required"`
+		UserId   string `json:"userId" form:"userId"  binding:"required"`
 		UserName string `json:"userName" form:"userName"  binding:"required"`
 		Address  string `json:"address" form:"address"  binding:"required"`
-		UserType int `json:"userType" form:"userType"  binding:"required"`
+		UserType int    `json:"userType" form:"userType"  binding:"required"`
 	}
 
 	users := ShowUser{}
@@ -262,7 +262,7 @@ func (connRedis *ConnRedis) Login(c *gin.Context) {
 	}
 	flag := false
 	for _, userdata := range userData {
-		if userdata.UserName == json.UserName && userdata.PassWord == json.PassWord && userdata.UserType == json.UserType{
+		if userdata.UserName == json.UserName && userdata.PassWord == json.PassWord && userdata.UserType == json.UserType {
 			c.JSON(200, gin.H{
 				"status": true,
 				"result": userdata,
@@ -273,7 +273,7 @@ func (connRedis *ConnRedis) Login(c *gin.Context) {
 	}
 	if !flag {
 		c.JSON(500, gin.H{
-			"status": false,
+			"status":  false,
 			"message": "用户名或密码不正确，或者用户类型选择错误",
 		})
 	}
