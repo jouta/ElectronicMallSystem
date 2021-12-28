@@ -139,3 +139,15 @@ func (order Order) OrderTimeOut(c redis.Conn, orderid string) error {
 	}
 	return nil
 }
+
+func (order Order) UpdateOrder(c redis.Conn, orderid string) error {
+	_, err := c.Do("HSET", order.OrderId,
+		"price", order.Price,
+		"remark", order.Remark,
+		"productNum", order.ProductNum,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

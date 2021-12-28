@@ -284,6 +284,66 @@ func (connRedis *ConnRedis) ShoppingCart(c *gin.Context) {
 	})
 }
 
+func (connRedis *ConnRedis) UpdateOrder(c *gin.Context) {
+	orderID := c.Query("orderid")
+	//先查询，获取原来的值放在orderData中
+	order := models.Order{}
+	err, orderData := order.GetOrder(connRedis.DB, orderID)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+		return
+	}
+
+	//绑定从前端查到的值json，空的值就保持原来的值
+	json := models.Order{}
+	err = c.ShouldBindJSON(&json)
+	if err != nil {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+	json.OrderId = orderData.OrderId
+	if json.Price != 0 {
+		orderData.Price = json.Price
+	}
+	if json.Remark != "" {
+		orderData.Remark = json.Remark
+	}
+	if json.ProductNum != 0 {
+		orderData.ProductNum = json.ProductNum
+	}
+
+	err = orderData.UpdateOrder(connRedis.DB, orderID)
+	if err == nil {
+		c.JSON(200, gin.H{
+			"status": true,
+			"result": orderData,
+		})
+	} else {
+		resData := &Response{
+			status:  false,
+			message: err.Error(),
+		}
+		c.JSON(500, gin.H{
+			"status":  resData.status,
+			"message": resData.message,
+		})
+	}
+
+}
+
 func (connRedis *ConnRedis) OrderTimeOut() {
 	ticker := time.Tick(time.Second) //定义一个1秒间隔的定时器
 	for _ = range ticker {
