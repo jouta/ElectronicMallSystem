@@ -176,20 +176,6 @@ func (connRedis *ConnRedis) PayOrder(c *gin.Context) {
 		})
 		return
 	}
-	if orderData.OrderStatus == 2 {
-		c.JSON(500, gin.H{
-			"status":  false,
-			"message": "超时订单！不可付款！",
-		})
-		return
-	}
-	if orderData.OrderStatus == 0 {
-		c.JSON(500, gin.H{
-			"status":  false,
-			"message": "已支付的订单！",
-		})
-		return
-	}
 
 	//将当前时间赋给orderData.PayTime
 	timeUnix := time.Now().Unix() //已知的时间戳
