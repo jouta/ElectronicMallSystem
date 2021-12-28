@@ -25,17 +25,6 @@ func (connRedis *ConnRedis) CreateUser(c *gin.Context) {
 	//验证用户名是否已存在
 	user := models.User{}
 	err, userData := user.GetAllUser(connRedis.DB)
-	if err != nil {
-		resData := &Response{
-			status:  false,
-			message: err.Error(),
-		}
-		c.JSON(500, gin.H{
-			"status":  resData.status,
-			"message": resData.message,
-		})
-		return
-	}
 
 	for _, userdata := range userData {
 		if userdata.UserName == json.UserName {
