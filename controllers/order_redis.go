@@ -91,7 +91,7 @@ func (connRedis *ConnRedis) ShowOrder(c *gin.Context) {
 		PayTime     string  `json:"payTime" form:"payTime" binding:"required"`
 		OrderTime   string  `json:"orderTime" form:"orderTime" binding:"required"`
 		Remark      string  `json:"remark" form:"remark" binding:"required"`
-		ProductNum  int     `json:"productnum" form:"productNum" binding:"required"`
+		ProductNum  int     `json:"productNum" form:"productNum" binding:"required"`
 	}
 	var listOrders []ShowOrder
 
