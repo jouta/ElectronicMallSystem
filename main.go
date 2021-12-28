@@ -30,6 +30,8 @@ func main() {
 	redis_controllers := controllers.ConnRedis{}
 	redis_controllers.Connect()
 
+	go redis_controllers.OrderTimeOut()
+
 	r := gin.Default()
 	r.Use(Cors())
 	gin.SetMode(viper.GetString("mode"))
@@ -67,6 +69,8 @@ func main() {
 		admin.GET("/ShowOrder", redis_controllers.ShowOrder)
 		//删除订单
 		admin.POST("/DeleteOrder", redis_controllers.DeleteOrder)
+		//修改订单
+		admin.POST("/UpdateOrder", redis_controllers.UpdateOrder)
 	}
 
 	common := r.Group("/common")
